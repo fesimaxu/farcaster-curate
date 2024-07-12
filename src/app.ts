@@ -3,6 +3,7 @@ import cookieParser from "cookie-parser";
 import logger from "morgan";
 import dotenv from "dotenv";
 import mongoose, { ConnectOptions } from "mongoose";
+import UserPreferenceRoute from "./routes/index";
 
 dotenv.config();
 
@@ -11,6 +12,8 @@ const app = express();
 app.use(logger('dev'));
 app.use(express.json());
 app.use(cookieParser());
+app.use(express.urlencoded({ extended: false }));
+app.use(UserPreferenceRoute);
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI || '', {

@@ -1,6 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import { sendErrorResponse, sendSuccessfulResponse } from "../utils";
 import UserPreference from "../model/user-preference";
+import { filterChannels } from '../utils/channelSuggestion';
+import { getAllChannels, getTopFollowers } from '../utils/accountSuggestion';
+import {getChannel, getFollowers} from '../utils/axios';
+
 
 export const createUserPreferenceAndInterest = async (
   req: Request,
@@ -29,7 +33,7 @@ export const getUserPreferenceAndInterest = async (
 ) => {
   // request body payload
   try {
-    const { fid } = req.body;
+    const { fid } = req.params;
 
     const userPreferences = await UserPreference.find({
       fid
@@ -39,3 +43,62 @@ export const getUserPreferenceAndInterest = async (
     sendErrorResponse(res, 500, err);
   }
 };
+
+export const getUserChannel= async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  // request body payload
+  try {
+
+    const { fid } = req.params;
+
+    const userPreferences = await UserPreference.find({
+      fid
+    });
+
+    // const userPreferences = ["crypto", "social", "airdrop"];
+
+
+
+    const minFollowers = 5000;
+    const data = await getChannel();
+    console.log(data, "data from controller");
+    const response = filterChannels(data, userPreferences, minFollowers);
+    console.log(response, "response from controller");
+
+    sendSuccessfulResponse(res, 200, response);
+  } catch (err: any) {
+    sendErrorResponse(res, 500, err);
+  }
+};
+
+export const getUserFarcasterAccount= async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  // request body payload
+  try {
+
+    const { fid } = req.params;
+
+    const userPreferences = await UserPreference.find({
+      fid
+    });
+
+    // const userPreferences = ["crypto", "social", "airdrop"];
+
+    const minFollowers = 5000;
+    const topMember = 10;
+    const data = await getChannel();
+
+    const topFollowersResponse = await getTopFollowers(data, userPreferences, minFollowers, topMember);
+  
+    sendSuccessfulResponse(res, 200, topFollowersResponse);
+  } catch (err: any) {
+    sendErrorResponse(res, 500, err);
+  }
+};
+
