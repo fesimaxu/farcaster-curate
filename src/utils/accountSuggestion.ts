@@ -42,9 +42,3 @@ export async function getTopFollowers(data: any, keywords: any, minFollowers: an
     return topFollowers;
 }
 
-
-
-// getAllChannels()
-//     .then(data => getTopFollowers(data, keywords, minFollowers, topMember))
-//     .then(topFollowers => console.log(topFollowers))
-//     .catch(error => console.error(error));

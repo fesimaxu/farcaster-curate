@@ -1,10 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import { sendErrorResponse, sendSuccessfulResponse } from "../utils";
 import UserPreference from "../model/user-preference";
-import { filterChannels } from '../utils/channelSuggestion';
-import { getAllChannels, getTopFollowers } from '../utils/accountSuggestion';
-import {getChannel, getFollowers} from '../utils/axios';
-
+import { filterChannels } from "../utils/channelSuggestion";
+import { getTopFollowers } from "../utils/accountSuggestion";
+import { getChannel } from "../utils/axios";
 
 export const createUserPreferenceAndInterest = async (
   req: Request,
@@ -36,7 +35,7 @@ export const getUserPreferenceAndInterest = async (
     const { fid } = req.params;
 
     const userPreferences = await UserPreference.find({
-      fid
+      fid,
     });
     sendSuccessfulResponse(res, 200, userPreferences);
   } catch (err: any) {
@@ -44,23 +43,20 @@ export const getUserPreferenceAndInterest = async (
   }
 };
 
-export const getUserChannel= async (
+export const getUserChannel = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   // request body payload
   try {
-
     const { fid } = req.params;
 
     const userPreferences = await UserPreference.find({
-      fid
+      fid,
     });
 
     // const userPreferences = ["crypto", "social", "airdrop"];
-
-
 
     const minFollowers = 5000;
     const data = await getChannel();
@@ -74,18 +70,17 @@ export const getUserChannel= async (
   }
 };
 
-export const getUserFarcasterAccount= async (
+export const getUserFarcasterAccount = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   // request body payload
   try {
-
     const { fid } = req.params;
 
     const userPreferences = await UserPreference.find({
-      fid
+      fid,
     });
 
     // const userPreferences = ["crypto", "social", "airdrop"];
@@ -94,11 +89,15 @@ export const getUserFarcasterAccount= async (
     const topMember = 10;
     const data = await getChannel();
 
-    const topFollowersResponse = await getTopFollowers(data, userPreferences, minFollowers, topMember);
-  
+    const topFollowersResponse = await getTopFollowers(
+      data,
+      userPreferences,
+      minFollowers,
+      topMember
+    );
+
     sendSuccessfulResponse(res, 200, topFollowersResponse);
   } catch (err: any) {
     sendErrorResponse(res, 500, err);
   }
 };
-
