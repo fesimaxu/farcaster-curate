@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { sendErrorResponse, sendSuccessfulResponse } from "../utils";
-import UserPreference from "../model/user-preference";
+import UserPreference, { IUserPreference } from "../model/user-preference";
 import { filterChannels } from "../utils/channelSuggestion";
 import { getTopFollowers } from "../utils/accountSuggestion";
 import { getChannel } from "../utils/axios";
@@ -10,18 +10,56 @@ export const createUserPreferenceAndInterest = async (
   res: Response,
   next: NextFunction
 ) => {
-  // request body payload
   try {
     const { preferences, fid } = req.body;
 
-    const userPreferences = new UserPreference({
-      fid,
-      preference: preferences,
+    // Convert preferences to lowercase
+    const lowercasePreferences = preferences.map((pref: string) => pref.toLowerCase());
+
+    // Check if user preferences exist for the given fid
+    const existingUser = await UserPreference.findOne({ fid });
+    
+    if (!existingUser) {
+      // If not found, create a new user preference
+      const userPreferences: any = new UserPreference({
+        fid,
+        preference: lowercasePreferences,
+      });
+      await userPreferences.save();
+      const userResults = {
+        fid: userPreferences.fid,
+        preferences: userPreferences.preference
+       }
+      
+      return sendSuccessfulResponse(res, 200, userResults);
+    }
+
+    // If found, update the existing user preferences
+    let updatedPreferences = existingUser.preference.map((pref: string) => pref.toLowerCase());
+
+    // Filter out existing preferences and merge new ones
+    const newPreferences = lowercasePreferences.filter(
+      (newPref: string) => !updatedPreferences.includes(newPref)
+    );
+
+    updatedPreferences = [...updatedPreferences, ...newPreferences];
+
+    const updateField: Partial<IUserPreference> = {
+      preference: updatedPreferences,
+    };
+
+    const updateUserPreferences: any = await UserPreference.findByIdAndUpdate(existingUser._id, updateField, {
+      new: true,
     });
-    await userPreferences.save();
-    sendSuccessfulResponse(res, 200, userPreferences);
+
+   const userResults = {
+    fid: updateUserPreferences.fid,
+    preferences: updateUserPreferences.preference
+   }
+
+    sendSuccessfulResponse(res, 200, userResults);
   } catch (err: any) {
-    sendErrorResponse(res, 500, err);
+    sendErrorResponse(res, 500, err.message);
   }
 };
 
@@ -37,7 +75,16 @@ export const getUserPreferenceAndInterest = async (
     const userPreferences = await UserPreference.find({
       fid,
     });
-    sendSuccessfulResponse(res, 200, userPreferences);
+    if(!userPreferences || userPreferences.length === 0){
+      sendSuccessfulResponse(res, 200, []); 
+    }
+     const userResults = userPreferences.map((user) => {
+        return {
+          fid: user.fid,
+          preferences: user.preference
+        }
+      })
+    sendSuccessfulResponse(res, 200, userResults);
   } catch (err: any) {
     sendErrorResponse(res, 500, err);
   }
@@ -57,12 +104,13 @@ export const getUserChannel = async (
     });
 
     // const userPreferences = ["crypto", "social", "airdrop"];
-
+    const userResults = userPreferences.map((user) => {
+      return user.preference
+    })
+    const flatUserPreferences = userResults.flat();
     const minFollowers = 5000;
     const data = await getChannel();
-    console.log(data, "data from controller");
-    const response = filterChannels(data, userPreferences, minFollowers);
-    console.log(response, "response from controller");
+    const response = filterChannels(data, flatUserPreferences, minFollowers);
 
     sendSuccessfulResponse(res, 200, response);
   } catch (err: any) {
@@ -84,6 +132,10 @@ export const getUserFarcasterAccount = async (
     });
 
     // const userPreferences = ["crypto", "social", "airdrop"];
+    const userResults = userPreferences.map((user) => {
+      return user.preference
+    })
+    const flatUserPreferences = userResults.flat();
 
     const minFollowers = 5000;
     const topMember = 10;
@@ -91,7 +143,7 @@ export const getUserFarcasterAccount = async (
 
     const topFollowersResponse = await getTopFollowers(
       data,
-      userPreferences,
+      flatUserPreferences,
       minFollowers,
       topMember
     );
