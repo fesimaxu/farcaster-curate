@@ -115,11 +115,11 @@ This project uses the MIT License as found in [LICENSE](/LICENSE)
 
 ## 📖 Documentation
 
-Documentation can be found [SWAGGERDOCS](https://customer-service-web-app.onrender.com/api/docs)
+Documentation can be found [SWAGGERDOCS](https://farcaster-curate.onrender.com/api/docs)
 
 ## 🔗 Links
 
-[Live Base URL](https://customer-service-web-app.onrender.com)
+[Live Base URL](https://farcaster-curate.onrender.com)
 
 [Database Schema]()
 
