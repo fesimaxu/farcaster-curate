@@ -1,4 +1,5 @@
 import axios from 'axios';
+import {userFollowedChannel} from './userFollowedChannel';
 
 export function filterChannels(data: any , keywords: any, minFollowers: any) {
     const channels = data.result.channels;
@@ -7,6 +8,10 @@ export function filterChannels(data: any , keywords: any, minFollowers: any) {
         const descriptionContainsKeyword = keywords.some((keyword: any )=> channel.description.toLowerCase().includes(keyword.toLowerCase()));
         return (nameContainsKeyword || descriptionContainsKeyword) && channel.followerCount > minFollowers;
     });
+}
+
+export function getFollowedChannelIds(data: any) {
+  return data.result.channels.map((channel: any) => channel.id);
 }
 
 // Get all channels
