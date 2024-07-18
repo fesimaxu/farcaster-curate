@@ -1,4 +1,5 @@
 import { Server } from "socket.io";
+import { getRealTimeCastSocket } from "../emitter";
 
 
 
@@ -10,9 +11,7 @@ const socketConfig = async (server: any) => {
     pingTimeout: 20000 
   });
 
-
-//   getLiveTrendingPairsSocket(io);
-
+  getRealTimeCastSocket(io);
 
   io.on("connection", (socket) => {
     console.log("client connected");
