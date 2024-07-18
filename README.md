@@ -65,10 +65,21 @@ Start the server in dev mode:
 - GET `/user/get-preference/:fid` -> Get All User Preference
 - GET `/user/get-channel/:fid` -> Get All MeCastsage
 - GET `/user/get-farcaster-account/:fid` -> All Farcaster Accounts
+Personalised Feeds
+- GET `/user/get-feed/:fid` -> Get User personalised feeds
+Cast
+- GET `/user/get-cast/:fid` -> Get User cast
+- GET `/user/get-followed-channels/:fid` -> Get User followed channels
+- GET `/user/get-all-followers/:fid` -> Get All User followers
 
 ## WebSocket Endpoints
-- Message `agentLogin` -> Activate agents online
-- Emitter `activeAgent` -> Send active agents to customer
+- Message `getUserCast` -> Send fid
+  ```json
+  {
+    "fid": "200",
+  }
+  ```
+- Emitter `userCastData` -> Emits the user cast
 
 
 ## 📩 Requests

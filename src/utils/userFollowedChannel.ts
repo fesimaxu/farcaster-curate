@@ -1,9 +1,9 @@
-const axios = require('axios');
+import axios from 'axios';
 import { config } from 'dotenv';
 config();
 
-const fid = 370503;
-const server = "https://hub-api.neynar.com";
+// const fid = 370503;
+// const server = "https://hub-api.neynar.com";
 const apiKey = process.env.apiKey;
 
 
