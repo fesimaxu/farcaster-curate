@@ -12,6 +12,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@neynar/nodejs-sdk": "^1.38.0",
+    "@farcaster/hub-nodejs": "^0.11.8",
     "axios": "^1.7.2",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
@@ -20,7 +22,8 @@
     "mongoose": "^8.5.0",
     "morgan": "^1.10.0",
     "socket.io": "^4.7.5",
-    "ws": "^8.18.0"
+    "ws": "^8.18.0",
+    "viem": "^2.9.15"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.3",

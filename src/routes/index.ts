@@ -8,6 +8,7 @@ import {
   getUserCast,
   getUserFollowedChannels,
   getAllUserFollowers,
+  followFarcasterUser,
 } from "../controller/user-preference";
 
 const router = Router();
@@ -20,5 +21,6 @@ router.get("/user/get-feed/:fid", getUserFeed);
 router.get("/user/get-cast/:fid", getUserCast);
 router.get("/user/get-followed-channels/:fid", getUserFollowedChannels);
 router.get("/user/get-all-followers/:fid", getAllUserFollowers);
+router.post("/user/follow-farcaster-user", followFarcasterUser);
 
 export default router;

@@ -71,6 +71,7 @@ Cast
 - GET `/user/get-cast/:fid` -> Get User cast
 - GET `/user/get-followed-channels/:fid` -> Get User followed channels
 - GET `/user/get-all-followers/:fid` -> Get All User followers
+- POST `/user/follow-farcaster-user` -> Follow Users
 
 ## WebSocket Endpoints
 - Message `getUserCast` -> Send fid

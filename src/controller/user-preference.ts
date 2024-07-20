@@ -8,6 +8,10 @@ import {getCasts} from "../utils/usersCast";
 import { getChannel } from "../utils/axios";
 import {userFollowedChannel} from '../utils/userFollowedChannel';
 import {allUserFollowers} from '../utils/allUserFollowers';
+import neynarClient from "../utils/neynarClient";
+import { followUser } from "../utils/folllowUser";
+import { config } from 'dotenv';
+config();
 
 export const createUserPreferenceAndInterest = async (
   req: Request,
@@ -251,6 +255,25 @@ export const getAllUserFollowers = async (
     
 
     const response = await allUserFollowers(fid);
+
+    sendSuccessfulResponse(res, 200, response);
+  } catch (err: any) {
+    sendErrorResponse(res, 500, err);
+  }
+};
+
+
+export const followFarcasterUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+
+    const { fids } = req.body;
+
+
+    const response = await followUser(process.env.signer_uuid, fids);
 
     sendSuccessfulResponse(res, 200, response);
   } catch (err: any) {

@@ -7,6 +7,7 @@ const apiKey = process.env.apiKey;
 
 const options = {
   method: 'GET',
+  
   headers: {accept: 'application/json', api_key: apiKey}
 };
 
