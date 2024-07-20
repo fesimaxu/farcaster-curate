@@ -1,9 +1,17 @@
 import { Request, Response, NextFunction } from "express";
 import { sendErrorResponse, sendSuccessfulResponse } from "../utils";
 import UserPreference, { IUserPreference } from "../model/user-preference";
-import { filterChannels } from "../utils/channelSuggestion";
+import { filterChannels, getFollowedChannelIds } from "../utils/channelSuggestion";
 import { getTopFollowers } from "../utils/accountSuggestion";
+import {personalizedFeed} from "../utils/personalizedFeed";
+import {getCasts} from "../utils/usersCast";
 import { getChannel } from "../utils/axios";
+import {userFollowedChannel} from '../utils/userFollowedChannel';
+import {allUserFollowers} from '../utils/allUserFollowers';
+import neynarClient from "../utils/neynarClient";
+import { followUser } from "../utils/folllowUser";
+import { config } from 'dotenv';
+config();
 
 export const createUserPreferenceAndInterest = async (
   req: Request,
@@ -110,9 +118,16 @@ export const getUserChannel = async (
     const flatUserPreferences = userResults.flat();
     const minFollowers = 5000;
     const data = await getChannel();
-    const response = filterChannels(data, flatUserPreferences, minFollowers);
+    const filteredChannels = filterChannels(data, flatUserPreferences, minFollowers);
 
-    sendSuccessfulResponse(res, 200, response);
+
+    const userfollowedchannel = await userFollowedChannel(fid)
+
+    const followedChannelIds = getFollowedChannelIds(userfollowedchannel);
+
+    const recommendedChannels = filteredChannels.filter((channel: any) => !followedChannelIds.includes(channel.id));
+
+    sendSuccessfulResponse(res, 200, recommendedChannels);
   } catch (err: any) {
     sendErrorResponse(res, 500, err);
   }
@@ -138,14 +153,13 @@ export const getUserFarcasterAccount = async (
     const flatUserPreferences = userResults.flat();
 
     const minFollowers = 5000;
-    const topMember = 10;
     const data = await getChannel();
 
     const topFollowersResponse = await getTopFollowers(
       data,
       flatUserPreferences,
       minFollowers,
-      topMember
+      fid // Add fid argument here
     );
 
     sendSuccessfulResponse(res, 200, topFollowersResponse);
@@ -153,3 +167,117 @@ export const getUserFarcasterAccount = async (
     sendErrorResponse(res, 500, err);
   }
 };
+
+
+
+
+export const getUserFeed = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  // request body payload
+  try {
+    const { fid } = req.params;
+
+    const userPreferences = await UserPreference.find({
+      fid,
+    });
+    
+
+    const feeds = await personalizedFeed(fid);
+
+    sendSuccessfulResponse(res, 200, feeds);
+  } catch (err: any) {
+    sendErrorResponse(res, 500, err);
+  }
+};
+
+
+export const getUserCast = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  // request body payload
+  try {
+    const { fid } = req.params;
+
+    const userPreferences = await UserPreference.find({
+      fid,
+    });
+    
+
+    const response = await getCasts(fid);
+
+    sendSuccessfulResponse(res, 200, response);
+  } catch (err: any) {
+    sendErrorResponse(res, 500, err);
+  }
+};
+
+
+export const getUserFollowedChannels = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  // request body payload
+  try {
+    const { fid } = req.params;
+
+    const userPreferences = await UserPreference.find({
+      fid,
+    });
+    
+
+    const response = await userFollowedChannel(fid);
+
+    sendSuccessfulResponse(res, 200, response);
+  } catch (err: any) {
+    sendErrorResponse(res, 500, err);
+  }
+};
+
+
+export const getAllUserFollowers = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  // request body payload
+  try {
+    const { fid } = req.params;
+
+    const userPreferences = await UserPreference.find({
+      fid,
+    });
+    
+
+    const response = await allUserFollowers(fid);
+
+    sendSuccessfulResponse(res, 200, response);
+  } catch (err: any) {
+    sendErrorResponse(res, 500, err);
+  }
+};
+
+
+export const followFarcasterUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+
+    const { fids } = req.body;
+
+
+    const response = await followUser(process.env.signer_uuid, fids);
+
+    sendSuccessfulResponse(res, 200, response);
+  } catch (err: any) {
+    sendErrorResponse(res, 500, err);
+  }
+};
+
