@@ -180,9 +180,9 @@ export const getUserFeed = async (
   try {
     const { fid } = req.params;
 
-    const userPreferences = await UserPreference.find({
-      fid,
-    });
+    // const userPreferences = await UserPreference.find({
+    //   fid,
+    // });
     
 
     const feeds = await personalizedFeed(fid);

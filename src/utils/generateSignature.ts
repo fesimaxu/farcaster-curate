@@ -66,6 +66,3 @@ export const generate_signature = async function (public_key: string) {
 
   return { deadline, signature: sigHex };
 };
-
-
-getSignedKey();
