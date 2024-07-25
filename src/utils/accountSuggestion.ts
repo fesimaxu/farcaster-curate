@@ -74,22 +74,32 @@
 
 import axios from 'axios';
 import { filterChannels } from './channelSuggestion';
-import {allUserFollowers} from './allUserFollowers';
+import { allUserFollowers } from './allUserFollowers';
 import { userDetails } from './userDetails';
 
 // Get all channels
-export async function getAllChannels() {
-    const response = await axios.get('https://api.warpcast.com/v2/all-channels');
-    return response.data;
+export async function getAllChannels(): Promise<any> {
+    try {
+        const response = await axios.get('https://api.warpcast.com/v2/all-channels');
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching channels:', error);
+        throw error;
+    }
 }
 
 // Function to get channel followers
-export async function getChannelFollowers(channelId: any): Promise<any[]> {
-    const response = await axios.get(`https://api.warpcast.com/v1/channel-followers?channelId=${channelId}`);
-    return response.data.result.users;
+export async function getChannelFollowers(channelId: string): Promise<any[]> {
+    try {
+        const response = await axios.get(`https://api.warpcast.com/v1/channel-followers?channelId=${channelId}`);
+        return response.data.result.users;
+    } catch (error) {
+        console.error(`Error fetching followers for channel ${channelId}:`, error);
+        throw error;
+    }
 }
 
-export async function getTopFollowers(data: any, keywords: any, minFollowers: any, fid: any) {
+export async function getTopFollowers(data: any, keywords: string[], minFollowers: number, fid: string): Promise<any> {
     const filteredChannels = filterChannels(data, keywords, minFollowers);
     const followerPromises = filteredChannels.map((channel: any) => getChannelFollowers(channel.id));
     const followersArrays = await Promise.all(followerPromises);
@@ -104,10 +114,12 @@ export async function getTopFollowers(data: any, keywords: any, minFollowers: an
     // Fetch the users the current user is already following
     let followingUsers = await allUserFollowers(fid);
 
-    const followingUsersSet = new Set(followingUsers.map((user: any) => user.fid));
+    // Convert followingUsers to a Set for efficient lookup
+    const followingUsersSet = new Set(followingUsers.users.map((user: any) => user.fid));
+
 
     // Filter out already-followed users from each channel's followers
-    const filteredFollowersArrays = followersArrays.map(array => array.filter((follower: any)=> !followingUsersSet.has(follower.fid)));
+    const filteredFollowersArrays = followersArrays.map(array => array.filter((follower: any) => !followingUsersSet.has(follower.fid)));
 
     function getFirstNFid(arr: any[], n: number) {
         return arr.slice(0, n).map(obj => obj.fid);
@@ -134,9 +146,6 @@ export async function getTopFollowers(data: any, keywords: any, minFollowers: an
             break;
         }
     }
-
-    // Flatten the array
-    topFollowers = topFollowers.flat();
 
     // Remove duplicates
     topFollowers = [...new Set(topFollowers)];

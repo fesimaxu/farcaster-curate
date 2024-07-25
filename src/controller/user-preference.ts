@@ -146,11 +146,11 @@ export const getUserFarcasterAccount = async (
       fid,
     });
 
-    // const userPreferences = ["crypto", "social", "airdrop"];
     const userResults = userPreferences.map((user) => {
       return user.preference
     })
     const flatUserPreferences = userResults.flat();
+
 
     const minFollowers = 5000;
     const data = await getChannel();
