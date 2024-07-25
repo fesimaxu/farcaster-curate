@@ -270,10 +270,10 @@ export const followFarcasterUser = async (
 ) => {
   try {
 
-    const { fids } = req.body;
+    const { signer_uuid, fids } = req.body;
 
 
-    const response = await followUser(process.env.signer_uuid, fids);
+    const response = await followUser(signer_uuid, fids);
 
     sendSuccessfulResponse(res, 200, response);
   } catch (err: any) {
