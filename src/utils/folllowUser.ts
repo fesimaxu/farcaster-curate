@@ -30,7 +30,6 @@ export async function followUser(uuid: any, fids: []) {
 
     try {
         const response = await axios.request(options);
-        console.log(response.data), "response";
         return response.data;
     } catch (e: any) {
         if (e.response) {
