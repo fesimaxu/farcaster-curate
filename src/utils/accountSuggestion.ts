@@ -74,7 +74,6 @@
 
 import axios from 'axios';
 import { filterChannels } from './channelSuggestion';
-// import { userDetails } from './userDetails';
 import {allUserFollowers} from './allUserFollowers';
 import { userDetails } from './userDetails';
 
@@ -105,10 +104,10 @@ export async function getTopFollowers(data: any, keywords: any, minFollowers: an
     // Fetch the users the current user is already following
     let followingUsers = await allUserFollowers(fid);
 
-    followingUsers = JSON.stringify(followingUsers)
+    const followingUsersSet = new Set(followingUsers.map((user: any) => user.fid));
 
     // Filter out already-followed users from each channel's followers
-    const filteredFollowersArrays = followersArrays.map(array => array.filter((follower: any)=> !followingUsers.includes(follower.fid)));
+    const filteredFollowersArrays = followersArrays.map(array => array.filter((follower: any)=> !followingUsersSet.has(follower.fid)));
 
     function getFirstNFid(arr: any[], n: number) {
         return arr.slice(0, n).map(obj => obj.fid);
