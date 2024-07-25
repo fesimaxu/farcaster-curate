@@ -140,16 +140,19 @@ export const getUserFarcasterAccount = async (
 ) => {
   // request body payload
   try {
-    const { fid } = req.params;
 
-    const userPreferences = await UserPreference.find({
-      fid,
-    });
+    const { fid, preferences } = req.body;
 
-    const userResults = userPreferences.map((user) => {
-      return user.preference
-    })
-    const flatUserPreferences = userResults.flat();
+    // const userPreferences = await UserPreference.find({
+    //   fid,
+    // });
+
+    // const userResults = userPreferences.map((user) => {
+    //   return user.preference
+    // })
+    // const flatUserPreferences = userResults.flat();
+
+    const updatedPreferences = preferences.map((pref: string) => pref.toLowerCase());
 
 
     const minFollowers = 5000;
@@ -157,7 +160,7 @@ export const getUserFarcasterAccount = async (
 
     const topFollowersResponse = await getTopFollowers(
       data,
-      flatUserPreferences,
+      updatedPreferences,
       minFollowers,
       fid // Add fid argument here
     );

@@ -16,7 +16,7 @@ const router = Router();
 router.post("/user/set-preference", createUserPreferenceAndInterest);
 router.get("/user/get-preference/:fid", getUserPreferenceAndInterest);
 router.get("/user/get-channel/:fid", getUserChannel);
-router.get("/user/get-farcaster-account/:fid", getUserFarcasterAccount);
+router.get("/user/get-farcaster-account", getUserFarcasterAccount);
 router.get("/user/get-feed/:fid", getUserFeed);
 router.get("/user/get-cast/:fid", getUserCast);
 router.get("/user/get-followed-channels/:fid", getUserFollowedChannels);
